@@ -1,0 +1,7 @@
+{
+  "appId": "com.casapi.familybudget",
+  "appName": "Casapi",
+  "webDir": "www",
+  "backgroundColor": "#f8fafc",
+  "android": { "allowMixedContent": false }
+}
