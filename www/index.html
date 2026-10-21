@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#059669">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Casapi">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <title>Casapi - Modern Family Budgeting & Financial Shield</title>
+  <meta name="description" content="A comprehensive, beginner-friendly Philippine Family Budgeting Web Application featuring the Family Budget Impact Simulator and Essential Needs Protection.">
+  
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons 6.5.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js 4.4.1 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-theme">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="modal-card modal-sm animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap warning" id="confirm-modal-icon">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 id="confirm-modal-title">Confirm Action</h3>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-modal-message">Are you sure you want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="confirm-cancel-btn">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-ok-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 1. AUTHENTICATION SECTION (Login & Sign-Up Views)            -->
+  <!-- ============================================================ -->
+  <div id="auth-section" class="auth-wrapper">
+    <div class="auth-container">
+      
+      <!-- Brand & Hero Column -->
+      <div class="auth-hero">
+        <div class="auth-hero-content">
+          <div class="brand-logo-large">
+            <div class="logo-icon-bubble">
+              <i class="fa-solid fa-coins"></i>
+            </div>
+            <div>
+              <h1 class="brand-title">Casapi</h1>
+              <span class="brand-badge">Pamilyang May Plano</span>
+            </div>
+          </div>
+          
+          <h2>Financial peace of mind for every Filipino household.</h2>
+          <p class="hero-desc">
+            Track household income, protect essential expenses like Meralco, rent, and groceries, and test planned purchases with our unique <strong>Family Budget Impact Simulator</strong>.
+          </p>
+
+          <div class="hero-feature-pills">
+            <div class="feature-pill">
+              <i class="fa-solid fa-shield-heart text-success"></i>
+              <span>Essential Needs Shield</span>
+            </div>
+            <div class="feature-pill">
+              <i class="fa-solid fa-calculator text-primary"></i>
+              <span>Impact Simulator</span>
+            </div>
+            <div class="feature-pill">
+              <i class="fa-solid fa-check-to-slot text-warning"></i>
+              <span>Family Voting</span>
+            </div>
+          </div>
+
+          <!-- Academic & Prototype Security Notice -->
+          <div class="prototype-notice-card">
+            <div class="notice-header">
+              <i class="fa-solid fa-graduation-cap"></i>
+              <strong>School Project Prototype Notice</strong>
+            </div>
+            <p>
+              This is a front-end educational prototype. Passwords are protected using client-side SHA-256 cryptographic hashing before saving to <code>localStorage</code>. A production application requires a secure backend, salted hashing (e.g. bcrypt/Argon2), HTTPS, and database synchronization.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth Form Card Column -->
+      <div class="auth-form-card">
+        
+        <!-- Tab Switcher -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab-btn active" id="tab-login-btn">
+            <i class="fa-solid fa-right-to-bracket"></i> Log In
+          </button>
+          <button type="button" class="auth-tab-btn" id="tab-signup-btn">
+            <i class="fa-solid fa-user-plus"></i> Create Account
+          </button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="login-form-container" class="auth-form-body">
+          <div class="auth-header-text">
+            <h3>Welcome back!</h3>
+            <p>Log in to manage your family's budget and savings.</p>
+          </div>
+
+          <form id="login-form" novalidate>
+            <div class="form-group">
+              <label for="login-email">Email Address</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-envelope input-icon"></i>
+                <input type="email" id="login-email" class="form-control" placeholder="e.g., santos.family@gmail.com" required autocomplete="email">
+              </div>
+              <small class="field-error" id="login-email-error"></small>
+            </div>
+
+            <div class="form-group">
+              <div class="label-row">
+                <label for="login-password">Password</label>
+                <button type="button" class="link-btn text-xs" id="forgot-password-trigger">Forgot password?</button>
+              </div>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+                <button type="button" class="btn-toggle-password" id="toggle-login-password" aria-label="Show or hide password">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+              <small class="field-error" id="login-password-error"></small>
+            </div>
+
+            <div class="form-options-row">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="login-remember">
+                <span class="checkmark"></span>
+                <span>Remember me on this browser</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-submit-btn">
+              <span>Log In to Dashboard</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </form>
+
+          <!-- Quick One-Click Demo Login for Presentation -->
+          <div class="demo-login-box">
+            <div class="demo-login-divider"><span>OR QUICK START</span></div>
+            <button type="button" class="btn btn-outline btn-block" id="quick-demo-login-btn">
+              <i class="fa-solid fa-bolt text-warning"></i>
+              <span>One-Click Demo Login (Santos Family)</span>
+            </button>
+            <p class="demo-credentials-hint">Preloaded with realistic Philippine budget data (₱65,000 monthly income, utilities, groceries, and savings goals).</p>
+          </div>
+
+          <div class="auth-switch-prompt">
+            Don't have a family account yet?
+            <button type="button" class="link-btn" id="link-to-signup">Sign up here</button>
+          </div>
+        </div>
+
+        <!-- SIGN-UP FORM -->
+        <div id="signup-form-container" class="auth-form-body hidden">
+          <div class="auth-header-text">
+            <h3>Start your family budget</h3>
+            <p>Set up an account to build financial security together.</p>
+          </div>
+
+          <form id="signup-form" novalidate>
+            <div class="form-group">
+              <label for="signup-name">Full Name (Family Administrator)</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-user input-icon"></i>
+                <input type="text" id="signup-name" class="form-control" placeholder="e.g., Roberto Santos" required>
+              </div>
+              <small class="field-error" id="signup-name-error"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="signup-family-name">Family / Household Name</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-house-chimney-user input-icon"></i>
+                <input type="text" id="signup-family-name" class="form-control" placeholder="e.g., The Santos Family" required>
+              </div>
+              <small class="field-error" id="signup-family-name-error"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="signup-email">Email Address</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-envelope input-icon"></i>
+                <input type="email" id="signup-email" class="form-control" placeholder="e.g., roberto@santosfamily.ph" required>
+              </div>
+              <small class="field-error" id="signup-email-error"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="signup-password">Password</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <input type="password" id="signup-password" class="form-control" placeholder="At least 6 characters" required autocomplete="new-password">
+                <button type="button" class="btn-toggle-password" id="toggle-signup-password" aria-label="Show or hide password">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+              <small class="field-error" id="signup-password-error"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="signup-confirm-password">Confirm Password</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-lock-open input-icon"></i>
+                <input type="password" id="signup-confirm-password" class="form-control" placeholder="Re-enter your password" required autocomplete="new-password">
+                <button type="button" class="btn-toggle-password" id="toggle-signup-confirm-password" aria-label="Show or hide password">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+              <small class="field-error" id="signup-confirm-error"></small>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="signup-submit-btn">
+              <span>Create Family Account</span>
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </form>
+
+          <div class="auth-switch-prompt">
+            Already registered?
+            <button type="button" class="link-btn" id="link-to-login">Log in here</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgot-password-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap primary">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h3>Reset Password Simulation</h3>
+        <button type="button" class="modal-close-btn" id="close-forgot-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-muted mb-4">
+          Enter your registered email address to set a new password on this browser session.
+        </p>
+        <div class="form-group">
+          <label for="reset-email">Email Address</label>
+          <input type="email" id="reset-email" class="form-control" placeholder="Your registered email">
+        </div>
+        <div class="form-group">
+          <label for="reset-new-password">New Password</label>
+          <input type="password" id="reset-new-password" class="form-control" placeholder="New password (min 6 chars)">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancel-reset-btn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="submit-reset-btn">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- 2. MAIN APPLICATION WORKSPACE                                -->
+  <!-- ============================================================ -->
+  <div id="app-section" class="app-layout hidden">
+    
+    <!-- MOBILE TOPBAR -->
+    <header class="mobile-topbar">
+      <button type="button" class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle navigation menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      
+      <div class="mobile-brand">
+        <i class="fa-solid fa-coins text-success"></i>
+        <span>Casapi</span>
+      </div>
+
+      <div class="mobile-actions">
+        <button type="button" class="icon-round-btn theme-toggle-btn" aria-label="Toggle dark mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- SIDEBAR NAVIGATION OVERLAY (for mobile) -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- MAIN SIDEBAR -->
+    <aside id="app-sidebar" class="sidebar">
+      
+      <!-- Brand Header -->
+      <div class="sidebar-brand">
+        <div class="brand-badge-box">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div class="brand-texts">
+          <h2 class="brand-name">Casapi</h2>
+          <span class="family-name-label" id="sidebar-family-name">The Santos Family</span>
+        </div>
+        <button type="button" class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Close sidebar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Active Family Member Pill -->
+      <div class="sidebar-member-selector">
+        <label for="active-member-select" class="selector-label">
+          <i class="fa-solid fa-user-circle"></i> Active Member:
+        </label>
+        <select id="active-member-select" class="form-control form-control-sm member-select-dropdown" aria-label="Switch current active family member">
+          <!-- Populated by JavaScript -->
+        </select>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav" aria-label="Main Navigation">
+        <ul class="nav-list">
+          
+          <li class="nav-item">
+            <button type="button" class="nav-link active" data-view="view-dashboard">
+              <i class="fa-solid fa-chart-pie nav-icon"></i>
+              <span class="nav-text">Dashboard</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-income">
+              <i class="fa-solid fa-money-bill-trend-up nav-icon"></i>
+              <span class="nav-text">Income</span>
+              <span class="nav-badge income-badge" id="nav-income-badge">₱0</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-expenses">
+              <i class="fa-solid fa-receipt nav-icon"></i>
+              <span class="nav-text">Expenses</span>
+              <span class="nav-badge expense-badge" id="nav-expense-badge">₱0</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-budget">
+              <i class="fa-solid fa-scale-balanced nav-icon"></i>
+              <span class="nav-text">Family Budget</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-members">
+              <i class="fa-solid fa-people-roof nav-icon"></i>
+              <span class="nav-text">Family Members</span>
+              <span class="nav-badge count-badge" id="nav-member-count">0</span>
+            </button>
+          </li>
+
+          <li class="nav-divider">
+            <span>KEY DIFFERENTIATORS</span>
+          </li>
+
+          <li class="nav-item highlight-item">
+            <button type="button" class="nav-link highlight-link" data-view="view-simulator">
+              <i class="fa-solid fa-calculator nav-icon"></i>
+              <span class="nav-text">Budget Impact Simulator</span>
+              <span class="badge-pill pulse-badge">Unique</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-essential-needs">
+              <i class="fa-solid fa-shield-heart nav-icon"></i>
+              <span class="nav-text">Essential Needs Protection</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-voting">
+              <i class="fa-solid fa-check-to-slot nav-icon"></i>
+              <span class="nav-text">Family Purchase Voting</span>
+              <span class="nav-badge alert-badge" id="nav-voting-pending-badge">0</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-savings">
+              <i class="fa-solid fa-piggy-bank nav-icon"></i>
+              <span class="nav-text">Savings Goals</span>
+            </button>
+          </li>
+
+          <li class="nav-divider">
+            <span>ANALYTICS & CONTROL</span>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-reports">
+              <i class="fa-solid fa-chart-line nav-icon"></i>
+              <span class="nav-text">Reports and Analytics</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-view="view-settings">
+              <i class="fa-solid fa-sliders nav-icon"></i>
+              <span class="nav-text">Settings</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button type="button" class="nav-link text-danger" id="sidebar-logout-btn">
+              <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i>
+              <span class="nav-text">Log Out</span>
+            </button>
+          </li>
+
+        </ul>
+      </nav>
+
+      <!-- Sidebar Footer User Card -->
+      <div class="sidebar-user-footer">
+        <div class="user-avatar-circle" id="sidebar-user-avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="user-info-text">
+          <strong class="user-display-name" id="sidebar-user-name">Roberto Santos</strong>
+          <span class="user-email-label" id="sidebar-user-email">roberto@santos.ph</span>
+        </div>
+        <button type="button" class="icon-round-btn theme-toggle-btn" title="Toggle Theme" aria-label="Toggle dark mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- MAIN APP CONTENT AREA -->
+    <main class="app-main">
+      
+      <!-- Top Sticky Action Bar -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <h2 class="view-header-title" id="topbar-page-title">Dashboard</h2>
+          <span class="current-period-tag" id="topbar-current-date">October 2026</span>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Quick Action Buttons -->
+          <button type="button" class="btn btn-sm btn-outline-success" id="quick-add-income-btn">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Income</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-danger" id="quick-add-expense-btn">
+            <i class="fa-solid fa-minus"></i>
+            <span>Add Expense</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-primary" id="quick-open-simulator-btn">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Simulate Purchase</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEW CONTAINER -->
+      <div class="views-wrapper">
+
+        <!-- ==================================================== -->
+        <!-- VIEW 1: DASHBOARD                                    -->
+        <!-- ==================================================== -->
+        <section id="view-dashboard" class="app-view active">
+          
+          <!-- Welcome Banner -->
+          <div class="welcome-banner">
+            <div class="welcome-text">
+              <h2 id="dashboard-welcome-heading">Magandang araw, Roberto! 👋</h2>
+              <p>Here is your family's financial snapshot for this month. All amounts are displayed in Philippine Pesos (₱).</p>
+            </div>
+            <div class="welcome-actions">
+              <span class="family-shield-status-pill" id="dashboard-shield-pill">
+                <i class="fa-solid fa-shield-halved text-success"></i> Essential Needs Shield: Active
+              </span>
+            </div>
+          </div>
+
+          <!-- Financial Summary Metric Cards -->
+          <div class="metrics-grid">
+            
+            <!-- Card 1: Total Monthly Income -->
+            <div class="metric-card income-theme">
+              <div class="metric-header">
+                <span class="metric-title">Total Monthly Income</span>
+                <div class="metric-icon-box success">
+                  <i class="fa-solid fa-wallet"></i>
+                </div>
+              </div>
+              <div class="metric-value-row">
+                <span class="metric-value text-success" id="dash-total-income">₱0.00</span>
+              </div>
+              <div class="metric-subtext">
+                <i class="fa-solid fa-arrow-trend-up text-success"></i>
+                <span id="dash-income-count-text">0 contributing sources</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Total Monthly Expenses -->
+            <div class="metric-card expense-theme">
+              <div class="metric-header">
+                <span class="metric-title">Total Monthly Expenses</span>
+                <div class="metric-icon-box danger">
+                  <i class="fa-solid fa-arrow-trend-down"></i>
+                </div>
+              </div>
+              <div class="metric-value-row">
+                <span class="metric-value text-danger" id="dash-total-expenses">₱0.00</span>
+              </div>
+              <div class="metric-subtext">
+                <span id="dash-expense-essential-ratio">Essential: ₱0.00 (0%)</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Remaining Budget -->
+            <div class="metric-card budget-theme">
+              <div class="metric-header">
+                <span class="metric-title">Remaining Family Budget</span>
+                <div class="metric-icon-box primary">
+                  <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+              </div>
+              <div class="metric-value-row">
+                <span class="metric-value" id="dash-remaining-budget">₱0.00</span>
+              </div>
+              <div class="metric-subtext">
+                <span id="dash-budget-utilization">0% of total budget used</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Total Savings -->
+            <div class="metric-card savings-theme">
+              <div class="metric-header">
+                <span class="metric-title">Total Family Savings</span>
+                <div class="metric-icon-box warning">
+                  <i class="fa-solid fa-piggy-bank"></i>
+                </div>
+              </div>
+              <div class="metric-value-row">
+                <span class="metric-value text-warning-dark" id="dash-total-savings">₱0.00</span>
+              </div>
+              <div class="metric-subtext">
+                <span id="dash-savings-goals-count">0 Active Goals</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Safe-to-Spend / Discretionary Highlight Banner -->
+          <div class="safe-spend-card">
+            <div class="safe-spend-content">
+              <div class="safe-spend-icon">
+                <i class="fa-solid fa-shield-heart"></i>
+              </div>
+              <div class="safe-spend-details">
+                <h4>Discretionary "Safe-to-Spend" Cash</h4>
+                <p class="text-sm">
+                  Calculated after protecting all upcoming bills, reserved essential needs, and savings targets:
+                </p>
+                <div class="safe-spend-math" id="dash-safe-spend-math">
+                  Remaining Budget (₱0.00) − Essential Reserve Buffer (₱0.00) =
+                </div>
+              </div>
+            </div>
+            <div class="safe-spend-amount-col">
+              <span class="safe-spend-badge" id="dash-safe-spend-value">₱0.00</span>
+              <small id="dash-safe-spend-status">Protected &amp; Secure</small>
+            </div>
+          </div>
+
+          <!-- Progress Indicators Row -->
+          <div class="dashboard-progress-section card-box mb-6">
+            <div class="section-title-row">
+              <div>
+                <h3 class="card-box-title">Monthly Budget Consumption</h3>
+                <p class="card-box-subtitle">Real-time status of family spending limits</p>
+              </div>
+              <span class="status-tag" id="dash-budget-status-tag">On Track</span>
+            </div>
+
+            <div class="progress-bar-container">
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="dash-budget-progress-bar" style="width: 0%;"></div>
+              </div>
+              <div class="progress-meta-row">
+                <span id="dash-progress-spent-text">Spent: ₱0.00</span>
+                <span id="dash-progress-percent-text">0%</span>
+                <span id="dash-progress-limit-text">Limit: ₱0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts & Analytics Row -->
+          <div class="dashboard-grid-2col">
+            
+            <!-- Chart 1: Spending Trends -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <h3 class="card-box-title">Monthly Spending vs Income</h3>
+                <span class="text-xs text-muted">Current Month</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-dash-comparison" height="220"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Category Breakdown -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <h3 class="card-box-title">Spending by Category</h3>
+                <span class="text-xs text-muted">Distribution</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-dash-categories" height="220"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Upcoming Bills & Recent Transactions Row -->
+          <div class="dashboard-grid-2col mt-6">
+            
+            <!-- Upcoming Bills Card -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <div>
+                  <h3 class="card-box-title">Upcoming Essential Bills</h3>
+                  <p class="card-box-subtitle">Reserved obligations due this cycle</p>
+                </div>
+                <button type="button" class="btn btn-xs btn-outline" id="manage-bills-link">Manage Shield</button>
+              </div>
+
+              <div class="bills-list-container" id="dash-upcoming-bills-list">
+                <!-- Populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Recent Transactions Card -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <div>
+                  <h3 class="card-box-title">Recent Transactions</h3>
+                  <p class="card-box-subtitle">Latest income &amp; family spending</p>
+                </div>
+                <button type="button" class="btn btn-xs btn-outline" id="view-all-tx-link">View All</button>
+              </div>
+
+              <div class="recent-tx-list" id="dash-recent-tx-list">
+                <!-- Populated by JavaScript -->
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 2: INCOME MANAGEMENT                            -->
+        <!-- ==================================================== -->
+        <section id="view-income" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Family Income Management</h2>
+              <p class="view-subtitle">Track salaries, remittances, side businesses, and family contributions.</p>
+            </div>
+            <button type="button" class="btn btn-success" id="open-add-income-modal-btn">
+              <i class="fa-solid fa-plus"></i>
+              <span>Add New Income</span>
+            </button>
+          </div>
+
+          <!-- Income Stats Header -->
+          <div class="stats-ribbon income-ribbon">
+            <div class="ribbon-item">
+              <span class="ribbon-label">Total Monthly Family Income</span>
+              <span class="ribbon-value text-success" id="income-summary-total">₱0.00</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="ribbon-label">Active Income Sources</span>
+              <span class="ribbon-value" id="income-summary-count">0</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="ribbon-label">Primary Earner</span>
+              <span class="ribbon-value" id="income-summary-primary">None</span>
+            </div>
+          </div>
+
+          <!-- Income Filter Bar -->
+          <div class="filter-bar card-box">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="income-search-input" class="form-control" placeholder="Search by source or member...">
+            </div>
+
+            <div class="filter-controls">
+              <select id="income-member-filter" class="form-control form-control-sm">
+                <option value="all">All Family Members</option>
+                <!-- Populated by JS -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Income Records Table -->
+          <div class="card-box table-card">
+            <div class="table-responsive">
+              <table class="data-table" id="income-table">
+                <thead>
+                  <tr>
+                    <th>Source / Description</th>
+                    <th>Contributing Member</th>
+                    <th>Date Received</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="income-table-body">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="income-empty-state" class="empty-state hidden">
+              <div class="empty-icon-wrap">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
+              <h4>No income records found</h4>
+              <p>Add family salaries, freelance earnings, or allowances to get started.</p>
+              <button type="button" class="btn btn-success btn-sm mt-3" id="empty-add-income-btn">
+                <i class="fa-solid fa-plus"></i> Add Income
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 3: EXPENSE MANAGEMENT                           -->
+        <!-- ==================================================== -->
+        <section id="view-expenses" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Family Expense Management</h2>
+              <p class="view-subtitle">Record and categorize everyday household spending with priority tagging.</p>
+            </div>
+            <button type="button" class="btn btn-danger" id="open-add-expense-modal-btn">
+              <i class="fa-solid fa-plus"></i>
+              <span>Add New Expense</span>
+            </button>
+          </div>
+
+          <!-- Expense Stats Ribbon -->
+          <div class="stats-ribbon expense-ribbon">
+            <div class="ribbon-item">
+              <span class="ribbon-label">Total Spent This Month</span>
+              <span class="ribbon-value text-danger" id="expense-summary-total">₱0.00</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="ribbon-label">Essential Needs Spent</span>
+              <span class="ribbon-value text-primary" id="expense-summary-essential">₱0.00</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="ribbon-label">Non-Essential / Discretionary</span>
+              <span class="ribbon-value text-warning-dark" id="expense-summary-nonessential">₱0.00</span>
+            </div>
+          </div>
+
+          <!-- Category Spend Chips Carousel/Grid -->
+          <div class="category-summary-strip" id="expense-category-chips">
+            <!-- Populated dynamically with category pills -->
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="filter-bar card-box">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="expense-search-input" class="form-control" placeholder="Search expense title...">
+            </div>
+
+            <div class="filter-controls">
+              <select id="expense-category-filter" class="form-control form-control-sm">
+                <option value="all">All Categories</option>
+                <!-- Populated by JS -->
+              </select>
+
+              <select id="expense-member-filter" class="form-control form-control-sm">
+                <option value="all">All Family Members</option>
+                <!-- Populated by JS -->
+              </select>
+
+              <select id="expense-priority-filter" class="form-control form-control-sm">
+                <option value="all">All Priorities</option>
+                <option value="essential">Essential Only</option>
+                <option value="nonessential">Non-Essential Only</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Expense Records Table -->
+          <div class="card-box table-card">
+            <div class="table-responsive">
+              <table class="data-table" id="expense-table">
+                <thead>
+                  <tr>
+                    <th>Expense Name</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Family Member</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="expense-table-body">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="expense-empty-state" class="empty-state hidden">
+              <div class="empty-icon-wrap">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <h4>No expenses recorded yet</h4>
+              <p>Keep your family finances transparent by logging your first expense.</p>
+              <button type="button" class="btn btn-danger btn-sm mt-3" id="empty-add-expense-btn">
+                <i class="fa-solid fa-plus"></i> Add Expense
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 4: FAMILY BUDGET MANAGEMENT                     -->
+        <!-- ==================================================== -->
+        <section id="view-budget" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Family Budget Limits</h2>
+              <p class="view-subtitle">Set overall spending caps and individual category allowances to avoid overspending.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="open-overall-budget-modal-btn">
+              <i class="fa-solid fa-gear"></i>
+              <span>Set Overall Budget</span>
+            </button>
+          </div>
+
+          <!-- Overall Budget Banner -->
+          <div class="budget-overview-card card-box">
+            <div class="budget-overview-main">
+              <div>
+                <span class="text-xs uppercase-label">Monthly Family Cap</span>
+                <h3 class="budget-headline-amount" id="budget-view-overall-cap">₱0.00</h3>
+              </div>
+              <div class="budget-stat-group">
+                <div class="stat-pill">
+                  <span class="pill-label">Total Spent</span>
+                  <span class="pill-val text-danger" id="budget-view-spent">₱0.00</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="pill-label">Remaining</span>
+                  <span class="pill-val text-success" id="budget-view-remaining">₱0.00</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="pill-label">Budget Used</span>
+                  <span class="pill-val" id="budget-view-percentage">0%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="progress-bar-track mt-4">
+              <div class="progress-bar-fill" id="budget-view-overall-progress" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Category Spending Limits Grid -->
+          <div class="section-title-row mt-6 mb-3">
+            <div>
+              <h3 class="card-box-title">Category Spending Limits</h3>
+              <p class="card-box-subtitle">Individual allowances with live percentage and over-budget warnings</p>
+            </div>
+          </div>
+
+          <div class="category-budget-grid" id="category-budget-cards-container">
+            <!-- Populated by JavaScript with interactive progress cards -->
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 5: FAMILY MEMBERS                               -->
+        <!-- ==================================================== -->
+        <section id="view-members" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Family Member Profiles</h2>
+              <p class="view-subtitle">Manage household members, assign roles, and track individual contributions.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="open-add-member-modal-btn">
+              <i class="fa-solid fa-user-plus"></i>
+              <span>Add Family Member</span>
+            </button>
+          </div>
+
+          <!-- Prototype Educational Notice -->
+          <div class="info-alert-box mb-6">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              <strong>Front-End Multi-Member Simulation:</strong>
+              You can switch active members using the selector in the sidebar to simulate different family members voting and contributing. In a production app, each member would log in from their own smartphone or computer via authenticated cloud sync.
+            </div>
+          </div>
+
+          <!-- Family Members Grid -->
+          <div class="family-members-grid" id="family-members-container">
+            <!-- Populated dynamically -->
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 6: BUDGET IMPACT SIMULATOR (Flagship Feature)   -->
+        <!-- ==================================================== -->
+        <section id="view-simulator" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <div class="flex-align-gap">
+                <h2 class="view-title">Family Budget Impact Simulator</h2>
+                <span class="badge-pill primary">Core Differentiator</span>
+              </div>
+              <p class="view-subtitle">
+                "Test before you buy." See how a planned purchase directly affects your remaining budget, essential bills, and savings targets before spending a single peso.
+              </p>
+            </div>
+          </div>
+
+          <!-- Simulator Workspace Grid -->
+          <div class="simulator-layout">
+            
+            <!-- Left Column: Inputs & Option Comparison -->
+            <div class="simulator-card card-box">
+              <div class="simulator-card-header">
+                <div class="icon-circle primary">
+                  <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                  <h3 class="card-box-title">Simulate Planned Purchase</h3>
+                  <p class="card-box-subtitle">Uses real live budget &amp; reserved bill data</p>
+                </div>
+              </div>
+
+              <form id="simulator-form" class="mt-4">
+                
+                <div class="form-group">
+                  <label for="sim-item-name">What do you plan to buy?</label>
+                  <div class="input-with-icon">
+                    <i class="fa-solid fa-bag-shopping input-icon"></i>
+                    <input type="text" id="sim-item-name" class="form-control" placeholder="e.g., Inverter Aircon, Shoes, School Tablet" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="sim-item-price">Purchase Price (₱)</label>
+                  <div class="input-with-icon">
+                    <span class="currency-prefix">₱</span>
+                    <input type="number" id="sim-item-price" class="form-control pl-8" placeholder="0.00" min="1" step="0.01" required>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="sim-category">Category</label>
+                    <select id="sim-category" class="form-control">
+                      <!-- Populated dynamically -->
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="sim-priority">Purchase Priority</label>
+                    <select id="sim-priority" class="form-control">
+                      <option value="nonessential">Non-Essential / Discretionary</option>
+                      <option value="essential">Essential Need</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="sim-target-date">Planned Purchase Date (Optional)</label>
+                  <input type="date" id="sim-target-date" class="form-control">
+                </div>
+
+                <div class="simulator-actions-row">
+                  <button type="button" class="btn btn-outline" id="sim-reset-btn">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                  </button>
+                  <button type="submit" class="btn btn-primary" id="sim-run-btn">
+                    <i class="fa-solid fa-bolt"></i> Run Live Simulation
+                  </button>
+                </div>
+              </form>
+
+              <!-- Option Price Comparison Section -->
+              <div class="price-comparison-box mt-6">
+                <div class="comparison-header">
+                  <div>
+                    <h4 class="text-sm font-semibold">Compare Multiple Price Options</h4>
+                    <p class="text-xs text-muted">Test 3 tiers (e.g. Budget vs Mid-Range vs Premium)</p>
+                  </div>
+                  <button type="button" class="btn btn-xs btn-outline-primary" id="sim-add-compare-btn">
+                    <i class="fa-solid fa-sliders"></i> Compare Tiers
+                  </button>
+                </div>
+
+                <div id="sim-comparison-container" class="comparison-grid hidden mt-3">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Real-Time Impact Results & Recommendation -->
+            <div class="simulator-results-card card-box" id="simulator-results-panel">
+              
+              <div class="simulator-card-header">
+                <div class="icon-circle success" id="sim-verdict-icon">
+                  <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                  <h3 class="card-box-title">Simulation Analysis &amp; Verdict</h3>
+                  <p class="card-box-subtitle">Holistic family financial health check</p>
+                </div>
+              </div>
+
+              <!-- Recommendation Badge & Narrative -->
+              <div class="verdict-banner mt-4" id="sim-verdict-banner">
+                <div class="verdict-tag" id="sim-verdict-tag">Ready to Simulate</div>
+                <h4 class="verdict-headline" id="sim-verdict-title">Enter a planned purchase to see recommendations.</h4>
+                <p class="verdict-explanation" id="sim-verdict-text">
+                  The simulator checks your remaining budget, guarantees your essential needs reserves, and ensures savings goals aren't jeopardized.
+                </p>
+              </div>
+
+              <!-- Side-by-Side Financial Before vs After -->
+              <div class="impact-metrics-breakdown mt-5">
+                
+                <div class="impact-metric-row">
+                  <span class="impact-label">Current Remaining Budget:</span>
+                  <span class="impact-value font-mono" id="sim-cur-remaining">₱0.00</span>
+                </div>
+
+                <div class="impact-metric-row highlight-subtraction">
+                  <span class="impact-label">Proposed Purchase Cost:</span>
+                  <span class="impact-value font-mono text-danger" id="sim-purchase-deduction">- ₱0.00</span>
+                </div>
+
+                <div class="impact-metric-row border-top font-bold">
+                  <span class="impact-label">Remaining Budget After Purchase:</span>
+                  <span class="impact-value font-mono" id="sim-after-remaining">₱0.00</span>
+                </div>
+
+                <div class="impact-metric-row">
+                  <span class="impact-label">Essential Needs Shield (Reserved Bills):</span>
+                  <span class="impact-value font-mono text-primary" id="sim-reserved-bills">₱0.00</span>
+                </div>
+
+                <div class="impact-metric-row">
+                  <span class="impact-label">Savings Target Buffer:</span>
+                  <span class="impact-value font-mono text-warning-dark" id="sim-savings-target">₱0.00</span>
+                </div>
+
+                <div class="impact-metric-row discretionary-result-row">
+                  <span class="impact-label">
+                    <i class="fa-solid fa-shield-heart text-success"></i> Discretionary Margin After Purchase:
+                  </span>
+                  <span class="impact-value font-mono" id="sim-discretionary-after">₱0.00</span>
+                </div>
+
+              </div>
+
+              <!-- Impact Checklist -->
+              <div class="impact-checklist mt-5">
+                <h4 class="checklist-title">Financial Safety Checklist:</h4>
+                <ul class="checklist-items">
+                  <li id="check-item-budget">
+                    <i class="fa-solid fa-circle-question check-icon"></i>
+                    <span>Fits within overall monthly budget</span>
+                  </li>
+                  <li id="check-item-essentials">
+                    <i class="fa-solid fa-circle-question check-icon"></i>
+                    <span>Protects upcoming bills (Electricity, Rent, Groceries)</span>
+                  </li>
+                  <li id="check-item-savings">
+                    <i class="fa-solid fa-circle-question check-icon"></i>
+                    <span>Keeps savings goals intact</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Direct Push to Family Voting -->
+              <div class="simulator-footer-actions mt-5" id="sim-push-voting-box">
+                <button type="button" class="btn btn-warning btn-block" id="sim-submit-to-voting-btn" disabled>
+                  <i class="fa-solid fa-check-to-slot"></i>
+                  <span>Submit to Family Purchase Voting</span>
+                </button>
+                <small class="text-xs text-muted block text-center mt-1">
+                  Allows all family members to review and vote on this purchase.
+                </small>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 7: ESSENTIAL NEEDS PROTECTION                   -->
+        <!-- ==================================================== -->
+        <section id="view-essential-needs" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Essential Needs Protection Shield</h2>
+              <p class="view-subtitle">
+                Reserve and quarantine funds for survival necessities (Food, Utilities, Rent, School, Medicine) before spending on wants.
+              </p>
+            </div>
+            <button type="button" class="btn btn-primary" id="open-add-essential-need-modal-btn">
+              <i class="fa-solid fa-plus"></i>
+              <span>Add Essential Bill / Need</span>
+            </button>
+          </div>
+
+          <!-- Essential Shield Overview Hero Card -->
+          <div class="shield-hero-card card-box">
+            <div class="shield-hero-grid">
+              <div class="shield-badge-col">
+                <div class="shield-circle-icon">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="shield-status-text">
+                  <span class="status-indicator-dot online"></span>
+                  <strong>Shield Protection Active</strong>
+                </div>
+              </div>
+
+              <div class="shield-summary-stats">
+                <div class="stat-cell">
+                  <span class="cell-label">Total Reserved Target</span>
+                  <span class="cell-val text-primary" id="shield-total-reserved">₱0.00</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="cell-label">Already Paid / Spent</span>
+                  <span class="cell-val text-danger" id="shield-total-spent">₱0.00</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="cell-label">Remaining Reserved Needed</span>
+                  <span class="cell-val text-warning-dark" id="shield-total-remaining">₱0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Clarification Notice distinguishing Spent vs Reserved -->
+            <div class="shield-explanation-footer">
+              <i class="fa-solid fa-lightbulb text-warning"></i>
+              <span>
+                <strong>How the Shield Works:</strong> Money "Reserved" is quarantined from your discretionary budget so you won't accidentally spend tuition or Meralco money on impulse shopping.
+              </span>
+            </div>
+          </div>
+
+          <!-- Essential Reserve Categories Grid -->
+          <div class="essential-cards-grid mt-6" id="essential-needs-container">
+            <!-- Populated by JavaScript -->
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 8: FAMILY PURCHASE VOTING                       -->
+        <!-- ==================================================== -->
+        <section id="view-voting" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Family Purchase Voting</h2>
+              <p class="view-subtitle">Democratic family decisions for high-ticket items. Vote, discuss, and suggest cheaper options.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="open-propose-purchase-modal-btn">
+              <i class="fa-solid fa-plus"></i>
+              <span>Propose New Purchase</span>
+            </button>
+          </div>
+
+          <!-- Voting Threshold Banner -->
+          <div class="voting-threshold-banner card-box mb-6">
+            <div class="threshold-info">
+              <div class="threshold-icon">
+                <i class="fa-solid fa-gavel"></i>
+              </div>
+              <div>
+                <h4>Voting Rule in Effect</h4>
+                <p class="text-sm text-muted">
+                  Purchases exceeding <strong id="voting-threshold-display">₱1,500.00</strong> require family review and majority approval.
+                </p>
+              </div>
+            </div>
+            <div class="threshold-active-user-badge">
+              <span>You are voting as:</span>
+              <strong id="voting-current-member-name">Roberto Santos</strong>
+            </div>
+          </div>
+
+          <!-- Proposal List Grid -->
+          <div class="voting-proposals-container" id="voting-proposals-list">
+            <!-- Populated dynamically -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="voting-empty-state" class="empty-state hidden">
+            <div class="empty-icon-wrap">
+              <i class="fa-solid fa-check-to-slot"></i>
+            </div>
+            <h4>No active purchase proposals</h4>
+            <p>Every family member can submit a planned purchase here for transparent voting.</p>
+            <button type="button" class="btn btn-primary btn-sm mt-3" id="empty-propose-btn">
+              Propose a Purchase
+            </button>
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 9: SAVINGS GOALS                                -->
+        <!-- ==================================================== -->
+        <section id="view-savings" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Family Savings Goals</h2>
+              <p class="view-subtitle">Build funds together for emergency reserves, education, appliances, and family trips.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="open-add-goal-modal-btn">
+              <i class="fa-solid fa-plus"></i>
+              <span>Create Savings Goal</span>
+            </button>
+          </div>
+
+          <!-- Savings Summary Banner -->
+          <div class="stats-ribbon savings-ribbon">
+            <div class="ribbon-item">
+              <span class="ribbon-label">Total Family Savings</span>
+              <span class="ribbon-value text-success" id="savings-summary-total">₱0.00</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="ribbon-label">Combined Target Amount</span>
+              <span class="ribbon-value" id="savings-summary-target">₱0.00</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="ribbon-label">Overall Progress</span>
+              <span class="ribbon-value text-primary" id="savings-summary-progress">0%</span>
+            </div>
+          </div>
+
+          <!-- Goals Grid -->
+          <div class="savings-goals-grid mt-6" id="savings-goals-container">
+            <!-- Populated by JavaScript -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="savings-empty-state" class="empty-state hidden">
+            <div class="empty-icon-wrap">
+              <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+            <h4>No savings goals created yet</h4>
+            <p>Set a target for your family's future, such as an Emergency Fund or Christmas Budget.</p>
+            <button type="button" class="btn btn-primary btn-sm mt-3" id="empty-add-goal-btn">
+              Create First Goal
+            </button>
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 10: REPORTS AND ANALYTICS                       -->
+        <!-- ==================================================== -->
+        <section id="view-reports" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Reports and Financial Analytics</h2>
+              <p class="view-subtitle">Comprehensive visual breakdown of family cash flow, category ratios, and trends.</p>
+            </div>
+            
+            <div class="reports-filter-group">
+              <select id="reports-month-filter" class="form-control form-control-sm">
+                <option value="all">All Months (YTD)</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10" selected>October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+
+              <select id="reports-year-filter" class="form-control form-control-sm">
+                <option value="2026" selected>2026</option>
+                <option value="2025">2025</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Financial Health Indicators Cards -->
+          <div class="analytics-metrics-grid">
+            <div class="analytics-stat-card">
+              <span class="stat-sub">Net Savings Rate</span>
+              <h3 class="stat-main text-success" id="report-savings-rate">0%</h3>
+              <p class="stat-hint">Portion of income preserved</p>
+            </div>
+
+            <div class="analytics-stat-card">
+              <span class="stat-sub">Essential Needs Ratio</span>
+              <h3 class="stat-main text-primary" id="report-essential-ratio">0%</h3>
+              <p class="stat-hint">Ideal: Below 65% of budget</p>
+            </div>
+
+            <div class="analytics-stat-card">
+              <span class="stat-sub">Budget Adherence</span>
+              <h3 class="stat-main" id="report-budget-adherence">0%</h3>
+              <p class="stat-hint">Total budget utilization</p>
+            </div>
+
+            <div class="analytics-stat-card">
+              <span class="stat-sub">Discretionary Spending</span>
+              <h3 class="stat-main text-warning-dark" id="report-discretionary-amount">₱0.00</h3>
+              <p class="stat-hint">Spent on non-essentials</p>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="analytics-charts-grid mt-6">
+            
+            <!-- Chart 1: Income vs Expenses -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <h3 class="card-box-title">Monthly Income vs Expenses</h3>
+                <span class="text-xs text-muted">Comparison</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-reports-flow" height="260"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Category Breakdown -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <h3 class="card-box-title">Expense Distribution by Category</h3>
+                <span class="text-xs text-muted">Breakdown</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-reports-category" height="260"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 3: Essential vs Non-Essential -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <h3 class="card-box-title">Essential vs Non-Essential Spending</h3>
+                <span class="text-xs text-muted">Needs vs Wants</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-reports-priority" height="260"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 4: Spending Trends -->
+            <div class="card-box">
+              <div class="section-title-row">
+                <h3 class="card-box-title">Monthly Spending Trends</h3>
+                <span class="text-xs text-muted">Timeline</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-reports-trend" height="260"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- VIEW 11: SETTINGS                                    -->
+        <!-- ==================================================== -->
+        <section id="view-settings" class="app-view">
+          
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Application Settings &amp; Preferences</h2>
+              <p class="view-subtitle">Manage family preferences, thresholds, appearance, and demo data.</p>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            
+            <!-- Settings Card 1: Family Preferences -->
+            <div class="card-box">
+              <h3 class="card-box-title mb-4">
+                <i class="fa-solid fa-house-chimney text-primary mr-2"></i> Household Settings
+              </h3>
+              
+              <form id="settings-family-form">
+                <div class="form-group">
+                  <label for="settings-family-name">Family Name</label>
+                  <input type="text" id="settings-family-name" class="form-control" value="The Santos Family">
+                </div>
+
+                <div class="form-group">
+                  <label for="settings-overall-budget">Default Monthly Family Budget (₱)</label>
+                  <div class="input-with-icon">
+                    <span class="currency-prefix">₱</span>
+                    <input type="number" id="settings-overall-budget" class="form-control pl-8" min="0" step="100">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="settings-voting-threshold">Purchase Voting Threshold (₱)</label>
+                  <div class="input-with-icon">
+                    <span class="currency-prefix">₱</span>
+                    <input type="number" id="settings-voting-threshold" class="form-control pl-8" min="100" step="50">
+                  </div>
+                  <small class="text-xs text-muted">Purchases at or above this amount require family voting.</small>
+                </div>
+
+                <div class="form-group">
+                  <label>Default Currency</label>
+                  <input type="text" class="form-control" value="Philippine Peso (₱) - PHP" readonly disabled>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Preferences
+                </button>
+              </form>
+            </div>
+
+            <!-- Settings Card 2: Appearance & Theme -->
+            <div class="card-box">
+              <h3 class="card-box-title mb-4">
+                <i class="fa-solid fa-palette text-success mr-2"></i> Appearance &amp; Display
+              </h3>
+
+              <div class="setting-toggle-row">
+                <div>
+                  <strong>Dark Mode Theme</strong>
+                  <p class="text-xs text-muted">Switch between crisp clean light mode and eye-comfort dark mode.</p>
+                </div>
+                <button type="button" class="btn btn-outline theme-toggle-btn" id="settings-theme-toggle">
+                  <i class="fa-solid fa-moon"></i> <span>Toggle Theme</span>
+                </button>
+              </div>
+
+              <div class="divider my-4"></div>
+
+              <!-- Account Info -->
+              <h4 class="font-semibold text-sm mb-2">Account Profile</h4>
+              <p class="text-xs text-muted mb-3">Logged in as administrator for this household session.</p>
+              
+              <div class="account-summary-pill mb-4">
+                <i class="fa-solid fa-user-shield text-primary"></i>
+                <div>
+                  <strong id="settings-account-name">Roberto Santos</strong>
+                  <div class="text-xs text-muted" id="settings-account-email">roberto@santos.ph</div>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-outline-danger btn-block" id="settings-logout-btn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out of Session
+              </button>
+            </div>
+
+            <!-- Settings Card 3: Security & Architecture Disclosure -->
+            <div class="card-box full-span">
+              <h3 class="card-box-title mb-2">
+                <i class="fa-solid fa-shield-halved text-warning mr-2"></i> Security &amp; School Project Architecture
+              </h3>
+              <p class="text-sm text-muted mb-4">
+                Transparency notes for teachers, project evaluators, and students:
+              </p>
+
+              <div class="architecture-grid">
+                <div class="arch-card">
+                  <i class="fa-solid fa-lock text-success"></i>
+                  <h5>Client-Side Password Security</h5>
+                  <p class="text-xs">
+                    Passwords are never stored in plaintext. They are hashed using the browser's <code>crypto.subtle.digest('SHA-256')</code> API before saving in <code>localStorage</code>.
+                  </p>
+                </div>
+
+                <div class="arch-card">
+                  <i class="fa-solid fa-server text-primary"></i>
+                  <h5>Production Transition Path</h5>
+                  <p class="text-xs">
+                    A commercial release requires a Node.js/Python backend with salted bcrypt/Argon2 hashing, encrypted HTTPS cookies, JWT tokens, and PostgreSQL database.
+                  </p>
+                </div>
+
+                <div class="arch-card">
+                  <i class="fa-solid fa-users text-warning-dark"></i>
+                  <h5>Simulated Multi-User Environment</h5>
+                  <p class="text-xs">
+                    Multi-member voting and role assignments are simulated locally. Real multi-device collaboration requires WebSockets or real-time database sync.
+                  </p>
+                </div>
+              </div>
+
+              <div class="danger-zone mt-6">
+                <div class="danger-zone-header">
+                  <div>
+                    <h4 class="text-danger font-semibold">Demo Data Management</h4>
+                    <p class="text-xs text-muted">Easily reset back to rich Filipino family demo data for presentations.</p>
+                  </div>
+                  <div class="danger-zone-actions">
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="btn-reload-demo-data">
+                      <i class="fa-solid fa-rotate"></i> Reset to Sample Filipino Family Data
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" id="btn-clear-all-data">
+                      <i class="fa-solid fa-trash-can"></i> Clear All Storage
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- 3. INTERACTIVE MODALS                                        -->
+  <!-- ============================================================ -->
+
+  <!-- MODAL: ADD / EDIT INCOME -->
+  <div id="modal-income" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-income-title">
+    <div class="modal-card animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap success">
+          <i class="fa-solid fa-money-bill-wave"></i>
+        </div>
+        <div>
+          <h3 id="modal-income-title">Add Income Record</h3>
+          <p class="text-xs text-muted">Log salary, remittance, or earnings</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-income">&times;</button>
+      </div>
+
+      <form id="form-income" novalidate>
+        <input type="hidden" id="income-edit-id">
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="income-source">Income Source / Description *</label>
+            <input type="text" id="income-source" class="form-control" placeholder="e.g., Monthly Salary, OFW Remittance, Sari-Sari Store" required>
+            <small class="field-error" id="income-source-error"></small>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="income-amount">Amount (₱) *</label>
+              <div class="input-with-icon">
+                <span class="currency-prefix">₱</span>
+                <input type="number" id="income-amount" class="form-control pl-8" placeholder="0.00" min="0.01" step="0.01" required>
+              </div>
+              <small class="field-error" id="income-amount-error"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="income-date">Date Received *</label>
+              <input type="date" id="income-date" class="form-control" required>
+              <small class="field-error" id="income-date-error"></small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="income-member">Contributing Family Member *</label>
+            <select id="income-member" class="form-control" required>
+              <!-- Populated by JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-income">Cancel</button>
+          <button type="submit" class="btn btn-success" id="income-save-btn">
+            <i class="fa-solid fa-check"></i> Save Income
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT EXPENSE -->
+  <div id="modal-expense" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-expense-title">
+    <div class="modal-card animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap danger">
+          <i class="fa-solid fa-receipt"></i>
+        </div>
+        <div>
+          <h3 id="modal-expense-title">Add Expense Record</h3>
+          <p class="text-xs text-muted">Record household bill, groceries, or expense</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-expense">&times;</button>
+      </div>
+
+      <form id="form-expense" novalidate>
+        <input type="hidden" id="expense-edit-id">
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="expense-name">Expense Name / Item *</label>
+            <input type="text" id="expense-name" class="form-control" placeholder="e.g., Meralco Electricity, Puregold Groceries, Jollibee Dinner" required>
+            <small class="field-error" id="expense-name-error"></small>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="expense-amount">Amount (₱) *</label>
+              <div class="input-with-icon">
+                <span class="currency-prefix">₱</span>
+                <input type="number" id="expense-amount" class="form-control pl-8" placeholder="0.00" min="0.01" step="0.01" required>
+              </div>
+              <small class="field-error" id="expense-amount-error"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="expense-date">Date Paid *</label>
+              <input type="date" id="expense-date" class="form-control" required>
+              <small class="field-error" id="expense-date-error"></small>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="expense-category">Category *</label>
+              <select id="expense-category" class="form-control" required>
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="expense-priority">Priority *</label>
+              <select id="expense-priority" class="form-control" required>
+                <option value="essential">Essential Need (Groceries, Utilities, Rent)</option>
+                <option value="nonessential">Non-Essential / Discretionary</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="expense-member">Spent by Family Member *</label>
+            <select id="expense-member" class="form-control" required>
+              <!-- Populated by JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-expense">Cancel</button>
+          <button type="submit" class="btn btn-danger" id="expense-save-btn">
+            <i class="fa-solid fa-check"></i> Save Expense
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SET OVERALL BUDGET -->
+  <div id="modal-overall-budget" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap primary">
+          <i class="fa-solid fa-scale-balanced"></i>
+        </div>
+        <div>
+          <h3>Monthly Family Budget</h3>
+          <p class="text-xs text-muted">Set family spending cap</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-overall-budget">&times;</button>
+      </div>
+
+      <form id="form-overall-budget">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="modal-budget-input">Total Monthly Budget Limit (₱)</label>
+            <div class="input-with-icon">
+              <span class="currency-prefix">₱</span>
+              <input type="number" id="modal-budget-input" class="form-control pl-8" min="1000" step="500" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-overall-budget">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Budget</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT CATEGORY BUDGET LIMIT -->
+  <div id="modal-category-budget" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap primary">
+          <i class="fa-solid fa-tags"></i>
+        </div>
+        <div>
+          <h3>Category Budget Limit</h3>
+          <p class="text-xs text-muted" id="modal-category-budget-subtitle">Set monthly allowance</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-category-budget">&times;</button>
+      </div>
+
+      <form id="form-category-budget">
+        <input type="hidden" id="category-budget-id">
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label id="category-budget-name-label">Monthly Spending Limit (₱)</label>
+            <div class="input-with-icon">
+              <span class="currency-prefix">₱</span>
+              <input type="number" id="category-budget-limit-input" class="form-control pl-8" min="0" step="100" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-category-budget">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Limit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT ESSENTIAL NEED -->
+  <div id="modal-essential-need" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap primary">
+          <i class="fa-solid fa-shield-heart"></i>
+        </div>
+        <div>
+          <h3 id="modal-essential-need-title">Add Essential Need</h3>
+          <p class="text-xs text-muted">Protect upcoming obligation in the Shield</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-essential-need">&times;</button>
+      </div>
+
+      <form id="form-essential-need" novalidate>
+        <input type="hidden" id="essential-need-edit-id">
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="essential-need-name">Essential Need / Bill Name *</label>
+            <input type="text" id="essential-need-name" class="form-control" placeholder="e.g., Meralco Electricity, Manila Water, House Rent" required>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="essential-need-target">Target Reserved Amount (₱) *</label>
+              <div class="input-with-icon">
+                <span class="currency-prefix">₱</span>
+                <input type="number" id="essential-need-target" class="form-control pl-8" placeholder="0.00" min="1" step="1" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="essential-need-category">Category *</label>
+              <select id="essential-need-category" class="form-control" required>
+                <!-- Populated by JS -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="essential-need-due">Estimated Due Day of Month</label>
+            <input type="number" id="essential-need-due" class="form-control" placeholder="e.g., 15 (every 15th)" min="1" max="31">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-essential-need">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save to Shield</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PROPOSE PURCHASE FOR VOTING -->
+  <div id="modal-propose-purchase" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap warning">
+          <i class="fa-solid fa-gavel"></i>
+        </div>
+        <div>
+          <h3>Propose Purchase for Voting</h3>
+          <p class="text-xs text-muted">Submit an item for family discussion and vote</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-propose-purchase">&times;</button>
+      </div>
+
+      <form id="form-propose-purchase" novalidate>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="vote-item-name">Item / Purchase Name *</label>
+            <input type="text" id="vote-item-name" class="form-control" placeholder="e.g., Inverter Aircon for Living Room" required>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="vote-item-price">Estimated Price (₱) *</label>
+              <div class="input-with-icon">
+                <span class="currency-prefix">₱</span>
+                <input type="number" id="vote-item-price" class="form-control pl-8" placeholder="0.00" min="1" step="1" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="vote-item-category">Category *</label>
+              <select id="vote-item-category" class="form-control" required>
+                <!-- Populated by JS -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="vote-item-reason">Why do we need this? (Family justification)</label>
+            <textarea id="vote-item-reason" class="form-control" rows="3" placeholder="Explain the benefit for the household (e.g., 'Saves electricity compared to our 10-year old unit and helps children sleep comfortably')."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-propose-purchase">Cancel</button>
+          <button type="submit" class="btn btn-warning">
+            <i class="fa-solid fa-paper-plane"></i> Submit Proposal
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT SAVINGS GOAL -->
+  <div id="modal-savings-goal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap success">
+          <i class="fa-solid fa-piggy-bank"></i>
+        </div>
+        <div>
+          <h3 id="modal-goal-title">Create Savings Goal</h3>
+          <p class="text-xs text-muted">Plan and track long-term family targets</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-savings-goal">&times;</button>
+      </div>
+
+      <form id="form-savings-goal" novalidate>
+        <input type="hidden" id="goal-edit-id">
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="goal-name">Goal Name *</label>
+            <input type="text" id="goal-name" class="form-control" placeholder="e.g., Emergency Fund (3 Months), College Tuition, Baguio Vacation" required>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="goal-target">Target Amount (₱) *</label>
+              <div class="input-with-icon">
+                <span class="currency-prefix">₱</span>
+                <input type="number" id="goal-target" class="form-control pl-8" placeholder="0.00" min="100" step="100" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="goal-current">Initial Amount Saved (₱)</label>
+              <div class="input-with-icon">
+                <span class="currency-prefix">₱</span>
+                <input type="number" id="goal-current" class="form-control pl-8" placeholder="0.00" min="0" step="100" value="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="goal-date">Target Date *</label>
+            <input type="date" id="goal-date" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-savings-goal">Cancel</button>
+          <button type="submit" class="btn btn-success">Save Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONTRIBUTE TO SAVINGS GOAL -->
+  <div id="modal-contribute-goal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap success">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+        <div>
+          <h3>Contribute to Goal</h3>
+          <p class="text-xs text-muted" id="modal-contribute-goal-name">Emergency Fund</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-contribute-goal">&times;</button>
+      </div>
+
+      <form id="form-contribute-goal" novalidate>
+        <input type="hidden" id="contribute-goal-id">
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="contribute-amount">Contribution Amount (₱) *</label>
+            <div class="input-with-icon">
+              <span class="currency-prefix">₱</span>
+              <input type="number" id="contribute-amount" class="form-control pl-8" placeholder="0.00" min="1" step="1" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contribute-member">Contributing Member</label>
+            <select id="contribute-member" class="form-control">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-contribute-goal">Cancel</button>
+          <button type="submit" class="btn btn-success">Add Contribution</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT FAMILY MEMBER -->
+  <div id="modal-family-member" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card animate-scale">
+      <div class="modal-header">
+        <div class="modal-icon-wrap primary">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div>
+          <h3 id="modal-member-title">Add Family Member</h3>
+          <p class="text-xs text-muted">Create household member profile</p>
+        </div>
+        <button type="button" class="modal-close-btn" data-close-modal="modal-family-member">&times;</button>
+      </div>
+
+      <form id="form-family-member" novalidate>
+        <input type="hidden" id="member-edit-id">
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="member-name">Full Name *</label>
+            <input type="text" id="member-name" class="form-control" placeholder="e.g., Maria Santos" required>
+          </div>
+
+          <div class="form-group">
+            <label for="member-role">Household Role *</label>
+            <select id="member-role" class="form-control" required>
+              <option value="Father / Head">Father / Household Head</option>
+              <option value="Mother / Parent">Mother / Household Head</option>
+              <option value="Parent">Parent / Guardian</option>
+              <option value="Eldest Child">Eldest Child / Young Adult</option>
+              <option value="Child / Student">Child / Student</option>
+              <option value="Grandparent">Grandparent / Senior</option>
+              <option value="Relative / Other">Relative / Extended Family</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="member-color">Avatar Accent Color</label>
+            <div class="color-picker-row">
+              <input type="color" id="member-color" class="color-picker-input" value="#10b981">
+              <span class="text-xs text-muted">Used for tags and charts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-family-member">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Entrypoint -->
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
+  </script>
+</body>
+</html>
+
