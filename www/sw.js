@@ -1,7 +1,7 @@
 /* Casapi service worker: offline support.
    - App files: cache-first, refreshed in background.
    - CDN assets (Chart.js, Font Awesome, Google Fonts): cached on first online load. */
-const VERSION = 'casapi-v1';
+const VERSION = 'casapi-v2';
 const APP_FILES = ['./', './index.html', './style.css', './script.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 const CDN_FILES = [

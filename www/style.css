@@ -2741,3 +2741,20 @@ body { padding-bottom: env(safe-area-inset-bottom); overscroll-behavior-y: none;
   input, select, textarea, .form-control { font-size: 16px; } /* stop iOS zoom on focus */
   .btn, .nav-link { min-height: 40px; }
 }
+
+/* ===== Fix: keep layout inside the phone screen ===== */
+html, body { max-width: 100%; overflow-x: hidden; }
+.app-layout, .app-main, .views-wrapper, .app-view { min-width: 0; max-width: 100%; }
+.card-box, .metric-card, .welcome-banner { min-width: 0; }
+.table-responsive, .category-summary-strip { max-width: 100%; }
+@media (max-width: 768px) {
+  .toast-container, .toast { max-width: calc(100vw - 2rem); }
+  .chart-wrapper { overflow: hidden; }
+}
+canvas { max-width: 100% !important; }
+
+/* Phone: stack top bar above content (it was sitting beside it) */
+@media (max-width: 768px) {
+  .app-layout { display: block; }
+  .app-main { width: 100%; margin-left: 0; }
+}
